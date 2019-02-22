@@ -4,6 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
+    <Authors>Jeferson Tenorio</Authors>
+    <Company>Jeferson Tenorio</Company>
+    <Description>Multiple http clients</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/jefersonsv/DataFoundation/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jefersonsv/HttpRequester</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jefersonsv/HttpRequester</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>http web client</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
