@@ -52,7 +52,9 @@ namespace HttpRequester
 
         static string GetKey(string url, string body)
         {
-            var uri = new Uri(url);
+            UriBuilder uri = new UriBuilder(new Uri(url));
+            uri.Password = null;
+
             var u = uri.ToString().Replace('/', ':').Replace('.', ':');
             var template = AllReplace(u, ":").TrimEnd(':');
             
