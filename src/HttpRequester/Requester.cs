@@ -155,7 +155,8 @@ namespace HttpRequester
                 case EnumHttpProvider.HttpClient:
                     foreach (var item in DefaultHeaders)
                     {
-                        this.httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
+                        if (!this.httpClient.DefaultRequestHeaders.Contains(item.Key))
+                            this.httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
                     }
 
                     if (!DefaultHeaders.ContainsKey("User-Agent"))
