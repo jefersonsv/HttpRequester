@@ -210,7 +210,7 @@ namespace HttpRequester
 
                     // Anglesharp
                     var requester = new AngleSharp.Io.DefaultHttpRequester(userAgent: ua);
-                    requester.Headers.Clear();
+                    // requester.Headers.Clear();
 
                     foreach (var item in DefaultHeaders)
                     {
@@ -227,8 +227,9 @@ namespace HttpRequester
                     }
 
                     AngleSharp.Io.LoaderOptions load = new AngleSharp.Io.LoaderOptions();
-                    load.IsNavigationDisabled = true;
+                    load.IsNavigationDisabled = false;
                     load.IsResourceLoadingEnabled = false;
+                    
                     var configuration = Configuration.Default.WithDefaultLoader(load);
 
                     angleSharpClient = AngleSharp.BrowsingContext.New(configuration);
