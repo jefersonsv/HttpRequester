@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp;
+using CliWrap;
 
 namespace HttpRequester
 {
@@ -27,31 +28,14 @@ namespace HttpRequester
         /// <returns></returns>
         public async Task<string> GetContentAsync(string url)
         {
-            //await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-            using (var cli = new CliWrap.Cli(this.chromeExecutable))
-            {
-                var args = $"--headless --disable-gpu --dump-dom {url}";
+            var args = $"--headless --disable-gpu --dump-dom {url}";
+            var result = await Cli.Wrap(this.chromeExecutable)
+                        .SetWorkingDirectory(Path.GetFullPath(this.chromeExecutable))
+                        .SetArguments(args ?? "")
+                        .SetStandardOutputEncoding(System.Text.Encoding.UTF8)
+                        .ExecuteAsync();
 
-                cli.Settings.Encoding = new CliWrap.Models.EncodingSettings()
-                {
-                    StandardOutput = System.Text.Encoding.UTF8
-                };
-
-                // Execute
-                var output = await cli.ExecuteAsync(args);
-                
-                // Throw an exception if CLI reported an error
-                // output.ThrowIfError();
-
-                return output.StandardOutput;
-                // Extract output
-                //var code = output.ExitCode;
-                //var stdOut = output.StandardOutput;
-                //var stdErr = output.StandardError;
-                //var startTime = output.StartTime;
-                //var exitTime = output.ExitTime;
-                //var runTime = output.RunTime;
-            }
+            return result.StandardOutput;
         }
 
         static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)

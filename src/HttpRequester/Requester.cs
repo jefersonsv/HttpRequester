@@ -203,17 +203,19 @@ namespace HttpRequester
 
                 case EnumHttpProvider.AngleSharp:
 
+
+                    var ua = this.SpiderSharpUserAgent;
+                    if (!DefaultHeaders.ContainsKey("User-Agent"))
+                        ua = this.SpiderSharpUserAgent;
+
                     // Anglesharp
-                    var requester = new AngleSharp.Network.Default.HttpRequester();
+                    var requester = new AngleSharp.Io.DefaultHttpRequester(userAgent: ua);
                     requester.Headers.Clear();
 
                     foreach (var item in DefaultHeaders)
                     {
                         requester.Headers[item.Key] = item.Value;
                     }
-
-                    if (!DefaultHeaders.ContainsKey("User-Agent"))
-                        requester.Headers["User-Agent"] = this.SpiderSharpUserAgent;
 
                     if (!DefaultHeaders.ContainsKey("Accept-Language"))
                         requester.Headers["Accept-Language"] = this.SpiderSharpAcceptLanguage;
@@ -224,13 +226,10 @@ namespace HttpRequester
                         ForceCookies = string.Empty;
                     }
 
-                    var configuration = Configuration.Default.WithDefaultLoader(loader =>
-                    {
-                        loader.IsNavigationEnabled = true;
-                        loader.IsResourceLoadingEnabled = false;
-                    },
-                        requesters: new[] { requester }
-                    );
+                    AngleSharp.Io.LoaderOptions load = new AngleSharp.Io.LoaderOptions();
+                    load.IsNavigationDisabled = true;
+                    load.IsResourceLoadingEnabled = false;
+                    var configuration = Configuration.Default.WithDefaultLoader(load);
 
                     angleSharpClient = AngleSharp.BrowsingContext.New(configuration);
                     break;

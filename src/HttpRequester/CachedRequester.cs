@@ -32,7 +32,7 @@ namespace HttpRequester
             redis = new DataFoundation.Redis.RedisConnection(redisConnectionString, redisPassword);
         }
 
-        public async Task DeleteContentAsync(string url, string body)
+        public async Task DeleteCacheAsync(string url, string body)
         {
             var prefix = new Uri(url).Host;
 
