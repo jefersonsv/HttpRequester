@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace HttpRequester
 {
-    public class HttpRequesterCached : IDriverRequester
+    public class RequesterCached : IDriverRequester
     {
         readonly CacheProvider cacheProvider;
         readonly IDriverRequester driver;
 
-        public HttpRequesterCached(EnumHttpProvider httpRequest, CacheProvider cacheProvider = null)
+        public RequesterCached(EnumHttpProvider httpRequest, CacheProvider cacheProvider = null)
         {
             switch (httpRequest)
             {
