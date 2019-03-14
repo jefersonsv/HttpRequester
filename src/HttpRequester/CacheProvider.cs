@@ -16,17 +16,10 @@ namespace HttpRequester
         readonly TimeSpan duration;
         readonly ICacheClient cache;
 
-        public CacheProvider(string endPointRedisCache, string passwordRedisCache = null, TimeSpan? duration = null)
+        public CacheProvider(DataFoundation.Redis.RedisConnection redis, TimeSpan? duration = null)
         {
-            var opt = new ConfigurationOptions();
-            opt.EndPoints.Add(endPointRedisCache);
-
-            if (!string.IsNullOrEmpty(passwordRedisCache))
-            opt.Password = passwordRedisCache;
-
             this.duration = duration ?? TimeSpan.FromDays(30);
-
-            cache = new RedisCacheClient(o => o.ConnectionMultiplexer(ConnectionMultiplexer.Connect(opt)));
+            cache = new RedisCacheClient(o => o.ConnectionMultiplexer(redis.Client));
         }
 
         static string GetKey(string url, IEnumerable<KeyValuePair<string, string>> postData)
@@ -37,18 +30,24 @@ namespace HttpRequester
                 var ordered = postData.OrderBy(o => o.Key).ThenBy(o => o.Value).ToList();
                 JArray arr = JArray.FromObject(ordered);
                 var json = arr.ToString();
-                hash = MD5Hash(json);
+                hash = MD5Base64Hash(json);
             }
 
-            UriBuilder uri = new UriBuilder(new Uri(url));
+            UriBuilder uri = new UriBuilder(new Uri(url.ToLower()));
             uri.Password = null;
 
-            var u = uri.ToString().Replace('/', ':').Replace('.', ':');
-            var template = AllReplace(u, ":").TrimEnd(':');
-            if (!string.IsNullOrEmpty(hash))
-                template = template + "#" + hash;
+            if (uri.Scheme.ToLower().Trim() == "http" && uri.Port == 80)
+                uri.Port = -1;
 
-            return template;
+            if (uri.Scheme.ToLower().Trim() == "https" && uri.Port == 443)
+                uri.Port = -1;
+
+            var cleaned = uri.ToString().Replace('/', ':').Replace('.', ':');
+            if (!string.IsNullOrEmpty(hash))
+                cleaned = cleaned + ":#" + hash;
+
+            cleaned = AllReplace(cleaned, ":").TrimEnd(':');
+            return cleaned;
         }
 
         static string AllReplace(string text, string character)
@@ -57,13 +56,34 @@ namespace HttpRequester
             return regex.Replace(text, character);
         }
 
-        static string MD5Hash(string input)
+        static string MD5AsciiHash(string input)
         {
             using (var md5 = MD5.Create())
             {
                 var result = md5.ComputeHash(Encoding.ASCII.GetBytes(input));
                 return Encoding.ASCII.GetString(result);
             }
+        }
+
+        static string MD5Base64Hash(string input)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var result = md5.ComputeHash(Encoding.ASCII.GetBytes(input));
+                return Base64Encode(Encoding.ASCII.GetString(result));
+            }
+        }
+
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public async Task<string> GetCachedAsync(string url, IEnumerable<KeyValuePair<string, string>> postData = null)

@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.11.0" />
     <PackageReference Include="CliWrap" Version="2.2.0" />
-    <PackageReference Include="DataFoundation.Redis" Version="1.0.5" />
+    <PackageReference Include="DataFoundation.Redis" Version="1.0.7" />
     <PackageReference Include="Foundatio" Version="8.0.1965" />
     <PackageReference Include="Foundatio.Redis" Version="8.0.1627" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />

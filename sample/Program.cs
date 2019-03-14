@@ -18,20 +18,10 @@ namespace HttpCached
 
         static async Task Main(string[] args)
         {
-            var h = new HttpRequester.HttpRequest(EnumHttpProvider.HttpClient, new CacheProvider("127.0.0.1", "bHEHe99cuLMRsGpzVerqC3Pa6hH06Ic9cq7peYH5jNitYidBktjzD62piTQCAKWq"));
-            var sdaadsdfsdfdsf = await h.GetContentAsync("http://getip.wholecheap.com");
+            var cached = new HttpRequester.HttpRequesterCached(EnumHttpProvider.HttpClient, new CacheProvider(new DataFoundation.Redis.RedisConnection()));
+            var content = await cached.GetContentAsync("https://www.google.com");
 
-            var r = new HttpClientDriverRequester();
-            //r.SetUserAgent("cACIQUE");
-            //r.SetAcceptLanguage("en-US");
-
-            
-            //r.SetUserAgent("cACIQUE 23432");
-            r.GetContentAsync("https://www.google.com").Wait();
-
-            return;
-            
-
+            Console.WriteLine($"Finished {content.Count()}");
             Thread.Sleep(Timeout.Infinite);
         }
     }

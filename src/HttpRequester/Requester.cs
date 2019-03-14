@@ -31,33 +31,17 @@ namespace HttpRequester
         public readonly System.Net.Http.HttpClient httpClient = null;
         public readonly BetterWebClient betterWebClient = null;
         public readonly WebClient webClient = null;
-        //public readonly IBrowsingContext angleSharpClient = null;
         public IBrowsingContext angleSharpClient = null;
         public readonly ChromeClient chromeHeadlessClient = null;
         public readonly ChromePersistentClient chromeHeadlessPersistentClient = null;
         readonly CacheProvider cacheProvider;
 
-        public Requester(EnumHttpProvider httpProvider, CacheProvider cacheProvider)
+        public Requester(EnumHttpProvider httpProvider)
         {
             this.HttpProvider = httpProvider;
-            this.cacheProvider = cacheProvider;
 
             if (httpProvider == EnumHttpProvider.AngleSharp)
             {
-                //// Anglesharp
-                //var requester = new AngleSharp.Network.Default.HttpRequester();
-
-                //if (!DefaultHeaders.ContainsKey("User-Agent"))
-                //    requester.Headers["User-Agent"] = this.SpiderSharpUserAgent;
-
-                //var configuration = Configuration.Default.WithDefaultLoader(loader =>
-                //{
-                //    loader.IsNavigationEnabled = true;
-                //    loader.IsResourceLoadingEnabled = false;
-                //},
-                //    requesters: new[] { requester }
-                //);
-
                 this.angleSharpClient = AngleSharp.BrowsingContext.New();
             }
             else if (httpProvider == EnumHttpProvider.BetterWebClient)
@@ -96,14 +80,6 @@ namespace HttpRequester
 
                     var ret = await httpClient.GetAsync(url);
                     return await ret.Content.ReadAsStringAsync();
-                    //if (ret.StatusCode == HttpStatusCode.OK)
-                    //{
-                        
-                    //}
-                    //else
-                    //{
-                    //    throw new Exception(ret.ReasonPhrase);
-                    //}
 
                 case EnumHttpProvider.WebClient:
                     return Encoding.Default.GetString(await webClient.DownloadDataTaskAsync(uri));
@@ -128,9 +104,6 @@ namespace HttpRequester
                     var data = await betterWebClient.DownloadDataTaskAsync(uri);
                     Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
                     
-                    //var debug = System.IO.Path.GetTempFileName() + ".html";
-                    //System.IO.File.WriteAllText(debug, System.Text.Encoding.Default.GetString(data));
-                    //Log.Information($"Debug: {debug}");
 
                     return Encoding.Default.GetString(data);
 
