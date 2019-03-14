@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace HttpRequester
+namespace HttpRequester.Engine
 {
     /// <summary>
     /// https://keestalkstech.com/2014/03/a-slightly-better-webclient-class/

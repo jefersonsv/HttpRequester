@@ -9,6 +9,7 @@ using AngleSharp;
 using System.IO;
 using System.Diagnostics;
 using Serilog;
+using HttpRequester.Engine;
 
 namespace HttpRequester
 {
@@ -32,8 +33,8 @@ namespace HttpRequester
         public readonly WebClient webClient = null;
         //public readonly IBrowsingContext angleSharpClient = null;
         public IBrowsingContext angleSharpClient = null;
-        public readonly ChromeHeadlessClient chromeHeadlessClient = null;
-        public readonly ChromeHeadlessPersistentClient chromeHeadlessPersistentClient = null;
+        public readonly ChromeClient chromeHeadlessClient = null;
+        public readonly ChromePersistentClient chromeHeadlessPersistentClient = null;
 
         public Requester(EnumHttpProvider httpProvider)
         {
@@ -63,11 +64,11 @@ namespace HttpRequester
             }
             else if (httpProvider == EnumHttpProvider.ChromeHeadless)
             {
-                this.chromeHeadlessClient = new ChromeHeadlessClient();
+                this.chromeHeadlessClient = new ChromeClient(true);
             }
             else if (httpProvider == EnumHttpProvider.ChromeHeadlessPersistent)
             {
-                this.chromeHeadlessPersistentClient = new ChromeHeadlessPersistentClient();
+                this.chromeHeadlessPersistentClient = new ChromePersistentClient(true);
             }
             else if (httpProvider == EnumHttpProvider.HttpClient)
             {
@@ -135,7 +136,7 @@ namespace HttpRequester
                     return await chromeHeadlessClient.GetContentAsync(uri.ToString());
 
                 case EnumHttpProvider.ChromeHeadlessPersistent:
-                    return await chromeHeadlessPersistentClient.GoAndGetContentAsync(uri.ToString());
+                    return await chromeHeadlessPersistentClient.GetContentAsync(uri.ToString());
             }
 
             throw new NotImplementedException();

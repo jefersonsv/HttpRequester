@@ -10,31 +10,31 @@ using System.Threading.Tasks;
 using PuppeteerSharp;
 using System.Dynamic;
 
-namespace HttpRequester
+namespace HttpRequester.Engine
 {
-    public class ChromeHeadlessPersistentClient
+    public class ChromePersistentClient : ChromeBase
     {
-        string chromeExecutable;
         string url;
         Browser browser;
         public Page page;
 
         // https://stackoverflow.com/questions/4291912/process-start-how-to-get-the-output
-        public ChromeHeadlessPersistentClient()
+        public ChromePersistentClient(bool headless)
         {
-            TryFindChromeExecutable();
-
-            //await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
-
             // Starting
             browser = Puppeteer.LaunchAsync(new LaunchOptions
             {
-                ExecutablePath = this.chromeExecutable,
-                Headless = true,
+                ExecutablePath = base.FindChromeExecutable(),
+                Headless = headless,
                 Args = new string[] { "--incognito", "--disable-extensions", "--safe-plugins", "--disable-translate" }
             }).Result;
 
             page = browser.PagesAsync().Result.First();
+        }
+
+        public async Task CloseAsync()
+        {
+            await page.Browser.CloseAsync();
         }
 
         public async Task<Response> GoToAsync(string url)
@@ -48,13 +48,13 @@ namespace HttpRequester
             page.WaitForSelectorAsync(selector).Wait();
         }
 
-        public async Task<string> GoAndGetContentAsync(string url)
+        public async Task<string> GetContentAsync(string url)
         {
             await GoToAsync(url);
-            return await GetContentAsync();
+            return await GetSourceCodeAsync();
         }
 
-        public async Task<string> GetContentAsync()
+        public async Task<string> GetSourceCodeAsync()
         {
             return await page.GetContentAsync();
         }
@@ -111,41 +111,6 @@ namespace HttpRequester
             });
 
             return Newtonsoft.Json.Linq.JArray.FromObject(obj);
-        }
-
-        string GetChromeExecutableFromRegistry()
-        {
-            bool hasRegistry = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            if (hasRegistry)
-            {
-                var keyName = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe";
-                return (string)Registry.GetValue(keyName, "Path", null);
-            }
-
-            return null;
-        }
-
-        public void TryFindChromeExecutable()
-        {
-            // https://stackoverflow.com/questions/17736215/universal-path-to-chrome-exe
-            // %LOCALAPPDATA%
-            // %programfiles(x86)%
-
-            var paths = new string[]
-            {
-                Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA"), @"Google\Chrome", "chrome.exe"),
-                Path.Combine(Environment.GetEnvironmentVariable("programfiles(x86)"), @"Google\Chrome\Application", "chrome.exe"),
-                Path.Combine(Environment.GetEnvironmentVariable("programfiles"), @"Google\Chrome\Application", "chrome.exe"),
-                GetChromeExecutableFromRegistry()
-            };
-
-            var idx = paths.ToList().FindIndex(w => File.Exists(w));
-            this.chromeExecutable = idx > -1 ? paths[idx] : null;
-        }
-
-        public void SetChromeExecutable(string chromeFilename)
-        {
-            this.chromeExecutable = chromeFilename;
         }
     }
 }

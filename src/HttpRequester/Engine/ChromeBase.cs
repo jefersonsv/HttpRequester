@@ -10,42 +10,10 @@ using System.Threading.Tasks;
 using PuppeteerSharp;
 using CliWrap;
 
-namespace HttpRequester
+namespace HttpRequester.Engine
 {
-    public class ChromeHeadlessClient
+    public abstract class ChromeBase
     {
-        string chromeExecutable;
-
-        // https://stackoverflow.com/questions/4291912/process-start-how-to-get-the-output
-        public ChromeHeadlessClient()
-        {
-            TryFindChromeExecutable();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<string> GetContentAsync(string url)
-        {
-            var args = $"--headless --disable-gpu --dump-dom {url}";
-            var result = await Cli.Wrap(this.chromeExecutable)
-                        .SetWorkingDirectory(Path.GetFullPath(this.chromeExecutable))
-                        .SetArguments(args ?? "")
-                        .SetStandardOutputEncoding(System.Text.Encoding.UTF8)
-                        .ExecuteAsync();
-
-            return result.StandardOutput;
-        }
-
-        static void OutputHandler(object sendingProcess, DataReceivedEventArgs outLine)
-        {
-            //* Do your stuff with the output (write to console/log/StringBuilder)
-            Console.WriteLine(outLine.Data);
-        }
-
-
-
         string GetChromeExecutableFromRegistry()
         {
             bool hasRegistry = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -58,7 +26,7 @@ namespace HttpRequester
             return null;
         }
 
-        public void TryFindChromeExecutable()
+        public string FindChromeExecutable()
         {
             // https://stackoverflow.com/questions/17736215/universal-path-to-chrome-exe
             // %LOCALAPPDATA%
@@ -73,12 +41,7 @@ namespace HttpRequester
             };
 
             var idx = paths.ToList().FindIndex(w => File.Exists(w));
-            this.chromeExecutable = idx > -1 ? paths[idx] : null;
-        }
-
-        public void SetChromeExecutable(string chromeFilename)
-        {
-            this.chromeExecutable = chromeFilename;
+            return idx > -1 ? paths[idx] : null;
         }
     }
 }

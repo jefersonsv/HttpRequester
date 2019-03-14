@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Foundatio" Version="8.0.1965" />
+    <PackageReference Include="Foundatio.Redis" Version="8.0.1627" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\src\HttpRequester\HttpRequester.csproj" />
   </ItemGroup>
 
