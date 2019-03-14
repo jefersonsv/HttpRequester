@@ -14,7 +14,7 @@ namespace HttpRequester.Driver
     /// <summary>
     /// This driver preserv cookie container and don't preserv referer
     /// </summary>
-    public class BetterWebClientDriverRequester : DriverRequester, IDriverRequester
+    public class BetterWebClientDriverRequester : BaseDriverRequester, IDriverRequester
     {
         BetterWebClient client = null;
 

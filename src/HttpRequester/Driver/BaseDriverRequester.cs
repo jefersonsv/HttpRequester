@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace HttpRequester.Driver
 {
-    public abstract class DriverRequester
+    public abstract class BaseDriverRequester
     {
         public abstract void SetHeader(string key, string value);
 

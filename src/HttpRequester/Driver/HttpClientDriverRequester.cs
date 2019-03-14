@@ -11,7 +11,7 @@ namespace HttpRequester.Driver
     /// <summary>
     /// This drivers preserv Referer http header after first request
     /// </summary>
-    public class HttpClientDriverRequester : DriverRequester, IDriverRequester
+    public class HttpClientDriverRequester : BaseDriverRequester, IDriverRequester
     {
         HttpClient client = null;
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HttpRequester.Driver
 {
-    public class AngleSharpDriverRequester : DriverRequester, IDriverRequester
+    public class AngleSharpDriverRequester : BaseDriverRequester, IDriverRequester
     {
         IBrowsingContext client = null;
         DefaultHttpRequester defaultHttpRequester = null;

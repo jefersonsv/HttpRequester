@@ -13,7 +13,7 @@ namespace HttpRequester.Driver
     /// <summary>
     /// This driver don't preserv referer http header
     /// </summary>
-    public class WebClientDriverRequester : DriverRequester, IDriverRequester
+    public class WebClientDriverRequester : BaseDriverRequester, IDriverRequester
     {
         WebClient client = null;
 

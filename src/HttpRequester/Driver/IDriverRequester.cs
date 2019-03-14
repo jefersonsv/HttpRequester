@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HttpRequester.Driver
 {
-    interface IDriverRequester
+    public interface IDriverRequester
     {
         void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers);
         void SetHeader(string key, string value);

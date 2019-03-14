@@ -13,7 +13,7 @@ namespace HttpRequester.Driver
     /// <summary>
     /// This driver don't preserv referer http header
     /// </summary>
-    public class ChromePersistentDriverRequester : DriverRequester, IDriverRequester
+    public class ChromePersistentDriverRequester : BaseDriverRequester, IDriverRequester
     {
         ChromePersistentClient client = null;
 

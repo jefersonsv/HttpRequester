@@ -35,10 +35,12 @@ namespace HttpRequester
         public IBrowsingContext angleSharpClient = null;
         public readonly ChromeClient chromeHeadlessClient = null;
         public readonly ChromePersistentClient chromeHeadlessPersistentClient = null;
+        readonly CacheProvider cacheProvider;
 
-        public Requester(EnumHttpProvider httpProvider)
+        public Requester(EnumHttpProvider httpProvider, CacheProvider cacheProvider)
         {
             this.HttpProvider = httpProvider;
+            this.cacheProvider = cacheProvider;
 
             if (httpProvider == EnumHttpProvider.AngleSharp)
             {
