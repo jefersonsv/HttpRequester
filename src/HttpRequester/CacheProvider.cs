@@ -99,5 +99,11 @@ namespace HttpRequester
             var key = GetKey(url, postData);
             return await cache.SetAsync<string>(key, content, duration);
         }
+
+        public async Task<bool> DeleteCacheAsync(string url, IEnumerable<KeyValuePair<string, string>> postData = null)
+        {
+            var key = GetKey(url, postData);
+            return await cache.RemoveAsync(key);
+        }
     }
 }
