@@ -8,6 +8,26 @@ using System.Threading.Tasks;
 
 namespace HttpRequester.Driver
 {
+    /// <summary>
+    /// if (Helper.IsNetworkAvailable())
+//            {
+//                var http = new DefaultHttpRequester();
+//    var request = new Request
+//    {
+//        Address = new Url("http://httpbin.org/status/500"),
+//        Method = HttpMethod.Get
+//    };
+
+//                using (var response = await http.RequestAsync(request, CancellationToken.None))
+//                {
+//                    Assert.IsNotNull(response);
+//                    Assert.AreEqual(500, (int) response.StatusCode);
+//    Assert.IsTrue(response.Content.CanRead);
+//                    Assert.IsTrue(response.Headers.Count > 0);
+//                }
+//}
+    /// </summary>
+    /// <seealso cref="https://github.com/AngleSharp/AngleSharp/blob/master/src/AngleSharp.Core.Tests/Library/HttpRequester.cs"/>
     public class AngleSharpDriverRequester : BaseDriverRequester, IDriverRequester
     {
         IBrowsingContext client = null;
