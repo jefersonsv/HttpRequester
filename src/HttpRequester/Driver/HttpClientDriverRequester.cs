@@ -40,5 +40,11 @@ namespace HttpRequester.Driver
 
             this.client.DefaultRequestHeaders.Add(key, value);
         }
+
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            var res = await client.GetByteArrayAsync(url);
+            return res;
+        }
     }
 }

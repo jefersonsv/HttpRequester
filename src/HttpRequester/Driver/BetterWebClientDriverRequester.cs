@@ -23,6 +23,12 @@ namespace HttpRequester.Driver
             this.client = new BetterWebClient();
         }
 
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            var res = await client.DownloadDataTaskAsync(url);
+            return res;
+        }
+
         public async Task<string> GetContentAsync(string url)
         {
             var res = await client.DownloadStringTaskAsync(new Uri(url));

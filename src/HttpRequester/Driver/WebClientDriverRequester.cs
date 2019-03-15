@@ -38,6 +38,12 @@ namespace HttpRequester.Driver
             return Encoding.Default.GetString(res);
         }
 
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            var bytes = await client.DownloadDataTaskAsync(new Uri(url));
+            return bytes;
+        }
+
         public override void SetHeader(string key, string value)
         {
             client.Headers[key] = value;

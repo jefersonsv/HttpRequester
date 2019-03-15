@@ -49,5 +49,10 @@ namespace HttpRequester.Driver
 
             //client = BrowsingContext.New(configuration.With(requester));
         }
+
+        public Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

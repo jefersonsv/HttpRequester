@@ -14,5 +14,6 @@ namespace HttpRequester.Driver
         void SetCookie(string cookie);
         Task<string> GetContentAsync(string url);
         Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData);
+        Task<byte[]> DownloadDataTaskAsync(string url);
     }
 }

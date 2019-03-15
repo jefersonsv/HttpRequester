@@ -44,6 +44,11 @@ namespace HttpRequester
             this.cacheProvider = cacheProvider;
         }
 
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            return await this.driver.DownloadDataTaskAsync(url);
+        }
+
         public async Task<string> GetContentAsync(string url)
         {
             if (cacheProvider != null)

@@ -37,5 +37,10 @@ namespace HttpRequester.Driver
         {
             throw new NotImplementedException();
         }
+
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
