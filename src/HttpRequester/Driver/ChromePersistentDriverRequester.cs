@@ -42,5 +42,10 @@ namespace HttpRequester.Driver
         {
             throw new NotImplementedException();
         }
+
+        public async Task<string> PostContentAsync(string url, string postData)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

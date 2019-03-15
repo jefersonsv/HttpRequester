@@ -8,6 +8,7 @@ namespace HttpRequester.Driver
 {
     public abstract class BaseDriverRequester
     {
+        public string LastCookie { get; set; }
         public abstract void SetHeader(string key, string value);
 
         public void SetAcceptLanguage(string acceptLanguage)

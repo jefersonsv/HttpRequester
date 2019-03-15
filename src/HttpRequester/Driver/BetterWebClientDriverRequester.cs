@@ -26,12 +26,14 @@ namespace HttpRequester.Driver
         public async Task<byte[]> DownloadDataTaskAsync(string url)
         {
             var res = await client.DownloadDataTaskAsync(url);
+            LastCookie = this.client.CookieContainer.GetCookieHeader(new Uri(url));
             return res;
         }
 
         public async Task<string> GetContentAsync(string url)
         {
             var res = await client.DownloadStringTaskAsync(new Uri(url));
+            LastCookie = this.client.CookieContainer.GetCookieHeader(new Uri(url));
             return res;
         }
 
@@ -41,8 +43,17 @@ namespace HttpRequester.Driver
             postData.ToList().ForEach(a => nameValueCollection.Add(a.Key, a.Value));
 
             var res = await this.client.UploadValuesTaskAsync(url, "POST", nameValueCollection);
-            //Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
+            LastCookie = this.client.CookieContainer.GetCookieHeader(new Uri(url));
             return Encoding.Default.GetString(res);
+        }
+
+        public async Task<string> PostContentAsync(string url, string postData)
+        {
+            var nameValueCollection = new NameValueCollection();
+            var res = await this.client.UploadStringTaskAsync(url, "POST", postData);
+            LastCookie = this.client.CookieContainer.GetCookieHeader(new Uri(url));
+
+            return res;
         }
 
         public override void SetHeader(string key, string value)

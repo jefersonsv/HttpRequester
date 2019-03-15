@@ -23,6 +23,7 @@ namespace HttpRequester.Driver
         public async Task<string> GetContentAsync(string url)
         {
             var res = await client.GetStringAsync(url);
+            //LastCookie = this.client.co
             return res;
         }
 
@@ -30,6 +31,12 @@ namespace HttpRequester.Driver
         {
             var body = new FormUrlEncodedContent(postData);
             var post = await this.client.PostAsync(url, body);
+            return await post.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> PostContentAsync(string url, string postData)
+        {
+            var post = await this.client.PostAsync(url, new StringContent(postData));
             return await post.Content.ReadAsStringAsync();
         }
 

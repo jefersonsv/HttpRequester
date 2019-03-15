@@ -7,6 +7,7 @@ namespace HttpRequester.Driver
 {
     public interface IDriverRequester
     {
+        string LastCookie { get; }
         void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers);
         void SetHeader(string key, string value);
         void SetUserAgent(string userAgent);
@@ -14,6 +15,7 @@ namespace HttpRequester.Driver
         void SetCookie(string cookie);
         Task<string> GetContentAsync(string url);
         Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData);
+        Task<string> PostContentAsync(string url, string postData);
         Task<byte[]> DownloadDataTaskAsync(string url);
     }
 }

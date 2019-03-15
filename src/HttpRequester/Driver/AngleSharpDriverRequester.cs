@@ -70,7 +70,12 @@ namespace HttpRequester.Driver
             //client = BrowsingContext.New(configuration.With(requester));
         }
 
-        public Task<byte[]> DownloadDataTaskAsync(string url)
+        public async Task<byte[]> DownloadDataTaskAsync(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> PostContentAsync(string url, string postData)
         {
             throw new NotImplementedException();
         }

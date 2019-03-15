@@ -13,8 +13,8 @@ using HttpRequester.Engine;
 
 namespace HttpRequester
 {
-    [Obsolete("Use RequesterCached")]
-    internal class Requester
+    //[Obsolete("Use RequesterCached")]
+    public class Requestera
     {
         public string ForceCookies { private get; set; }
         public string Cookies { get; private set; }
@@ -37,7 +37,7 @@ namespace HttpRequester
         public readonly ChromePersistentClient chromeHeadlessPersistentClient = null;
         readonly CacheProvider cacheProvider;
 
-        internal Requester(EnumHttpProvider httpProvider)
+        public Requestera(EnumHttpProvider httpProvider)
         {
             this.HttpProvider = httpProvider;
 

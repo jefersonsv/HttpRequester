@@ -34,8 +34,19 @@ namespace HttpRequester.Driver
             postData.ToList().ForEach(a => nameValueCollection.Add(a.Key, a.Value));
 
             var res = await this.client.UploadValuesTaskAsync(url, "POST", nameValueCollection);
+            //LastCookie = this.client.Container.co
             //Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
             return Encoding.Default.GetString(res);
+        }
+
+        public async Task<string> PostContentAsync(string url, string postData)
+        {
+            var nameValueCollection = new NameValueCollection();
+            var res = await this.client.UploadStringTaskAsync(url, "POST", postData);
+            //LastCookie = this.client.Container.co
+            //Cookies = betterWebClient.CookieContainer.GetCookieHeader(uri);
+
+            return res;
         }
 
         public async Task<byte[]> DownloadDataTaskAsync(string url)

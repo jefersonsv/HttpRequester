@@ -12,6 +12,7 @@ namespace HttpRequester
     {
         readonly CacheProvider cacheProvider;
         readonly IDriverRequester driver;
+        public string LastCookie { get => driver.LastCookie; }
 
         public RequesterCached(EnumHttpProvider httpRequest, CacheProvider cacheProvider = null)
         {
@@ -51,38 +52,21 @@ namespace HttpRequester
 
         public async Task<string> GetContentAsync(string url)
         {
-            if (cacheProvider != null)
-            {
-                var content = await cacheProvider.GetCachedAsync(url);
-                if (string.IsNullOrEmpty(content))
-                {
-                    content = await driver.GetContentAsync(url);
-                    await cacheProvider.SetCacheAsync(url, content);
-                }
-
-                return content;
-            }
-            else
-                return await driver.GetContentAsync(url);
+            Func<Task<string>> call = async () => await driver.GetContentAsync(url);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, (string) null, call);
         }
 
         public async Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
-            if (cacheProvider != null)
-            {
-                var content = await cacheProvider.GetCachedAsync(url, postData);
-                if (string.IsNullOrEmpty(content))
-                {
-                    content = await driver.PostContentAsync(url, postData);
-                    await cacheProvider.SetCacheAsync(url, content, postData);
-                }
-
-                return content;
-            }
-            else
-                return await driver.PostContentAsync(url, postData);
+            Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call);
         }
 
+        public async Task<string> PostContentAsync(string url, string postData)
+        {
+            Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call);
+        }
 
         public void SetAcceptLanguage(string acceptLanguage)
         {
