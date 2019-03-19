@@ -18,6 +18,8 @@ namespace HttpCached
 
         static async Task Main(string[] args)
         {
+
+
             Thread.Sleep(Timeout.Infinite);
         }
     }
