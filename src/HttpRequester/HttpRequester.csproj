@@ -20,6 +20,7 @@
     <PackageReference Include="DataFoundation.Redis" Version="1.0.7" />
     <PackageReference Include="Foundatio" Version="8.0.1965" />
     <PackageReference Include="Foundatio.Redis" Version="8.0.1627" />
+    <PackageReference Include="Humanizer" Version="2.5.16" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

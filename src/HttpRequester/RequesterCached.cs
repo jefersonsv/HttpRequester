@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HttpRequester
 {
-    public class RequesterCached : IDriverRequester
+    public class RequesterCached
     {
         readonly CacheProvider cacheProvider;
         readonly IDriverRequester driver;
@@ -50,22 +50,28 @@ namespace HttpRequester
             return await this.driver.DownloadDataTaskAsync(url);
         }
 
-        public async Task<string> GetContentAsync(string url)
+        public async Task<ResponseContext> GetAsync(string url)
+        {
+            Func<Task<ResponseContext>> call = async () => await driver.GetAsync(url);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, call);
+        }
+
+        public async Task<ResponseContext> GetContentAsync(string url)
         {
             Func<Task<string>> call = async () => await driver.GetContentAsync(url);
-            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, (string) null, call);
+            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, call);
         }
 
-        public async Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
+        public async Task<ResponseContext> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
             Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
-            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call);
+            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, postData, call);
         }
 
-        public async Task<string> PostContentAsync(string url, string postData)
+        public async Task<ResponseContext> PostContentAsync(string url, string postData)
         {
             Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
-            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call);
+            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, postData, call);
         }
 
         public void SetAcceptLanguage(string acceptLanguage)

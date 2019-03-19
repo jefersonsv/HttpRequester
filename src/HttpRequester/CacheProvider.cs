@@ -1,6 +1,7 @@
 ﻿using Foundatio.Caching;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
+using Humanizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,10 @@ namespace HttpRequester
             cache = new RedisCacheClient(o => o.ConnectionMultiplexer(redis.Client));
         }
 
-        static string GetKey(string url, IEnumerable<KeyValuePair<string, string>> postData)
+        static string GetKeyWithKeyValuePostData(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
+            var key = GetKeyWithUrl(url);
+
             string hash = null;
             if (postData != null && postData.Any())
             {
@@ -31,33 +34,27 @@ namespace HttpRequester
                 JArray arr = JArray.FromObject(ordered);
                 var json = arr.ToString();
                 hash = MD5Base64Hash(json);
+
+                return key + ":#" + hash;
             }
 
-            UriBuilder uri = new UriBuilder(new Uri(url.ToLower()));
-            uri.Password = null;
-
-            if (uri.Scheme.ToLower().Trim() == "http" && uri.Port == 80)
-                uri.Port = -1;
-
-            if (uri.Scheme.ToLower().Trim() == "https" && uri.Port == 443)
-                uri.Port = -1;
-
-            var cleaned = uri.ToString().Replace('/', ':').Replace('.', ':');
-            if (!string.IsNullOrEmpty(hash))
-                cleaned = cleaned + ":#" + hash;
-
-            cleaned = AllReplace(cleaned, ":").TrimEnd(':');
-            return cleaned;
+            return key;
         }
 
-        static string GetKey(string url, string postData)
+        static string GetKeyWithStringPostData(string url, string postData)
         {
-            string hash = null;
-            if (!string.IsNullOrEmpty(postData))
+            var key = GetKeyWithUrl(url);
+
+            if (postData != null && postData.Any())
             {
-                hash = MD5Base64Hash(postData);
+                return key + ":#" + MD5Base64Hash(postData);
             }
 
+            return key;
+        }
+
+        static string GetKeyWithUrl(string url)
+        {
             UriBuilder uri = new UriBuilder(new Uri(url.ToLower()));
             uri.Password = null;
 
@@ -68,8 +65,6 @@ namespace HttpRequester
                 uri.Port = -1;
 
             var cleaned = uri.ToString().Replace('/', ':').Replace('.', ':');
-            if (!string.IsNullOrEmpty(hash))
-                cleaned = cleaned + ":#" + hash;
 
             cleaned = AllReplace(cleaned, ":").TrimEnd(':');
             return cleaned;
@@ -111,73 +106,195 @@ namespace HttpRequester
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        public async Task<string> GetCachedAsync(string url, IEnumerable<KeyValuePair<string, string>> postData = null)
+        public async Task<string> GetCacheAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
-            var key = GetKey(url, postData);
+            var key = GetKeyWithKeyValuePostData(url, postData);
 
             var cached = await cache.GetAsync<string>(key);
             return cached.Value;
         }
 
-        public async Task<string> GetCachedAsync(string url, string postData = null)
+        public async Task<string> GetCacheAsync(string url, string postData)
         {
-            var key = GetKey(url, postData);
+            var key = GetKeyWithStringPostData(url, postData);
 
             var cached = await cache.GetAsync<string>(key);
             return cached.Value;
         }
 
-        public async Task<string> UseCachedAsync(string url, IEnumerable<KeyValuePair<string, string>> postData = null, Func<Task<string>> funcAsync = null)
+        public async Task<string> GetCacheAsync(string url)
         {
-            var key = GetKey(url, postData);
+            var key = GetObjectKey(url);
 
-            var cachedContent = await this.GetCachedAsync(url, postData);
-            if (string.IsNullOrEmpty(cachedContent))
+            var cached = await cache.GetAsync<string>(key);
+            return cached.Value;
+        }
+
+        public string GetObjectKey(string url, string objectName = null)
+        {
+            return string.IsNullOrEmpty(objectName) ? 
+                GetKeyWithUrl(url) : 
+                $"{objectName.Humanize().Replace(' ', '-').ToLower()}:" + GetKeyWithUrl(url);
+        }
+
+        public async Task<ResponseContext> GetCacheResponseContextAsync(string url)
+        {
+            var key = GetObjectKey(url, nameof(ResponseContext));
+
+            var cached = await cache.GetAsync<ResponseContext>(key);
+            return cached.Value;
+        }
+
+        public async Task<ResponseContext> UseCachedAsync(string url, Func<Task<ResponseContext>> funcAsync)
+        {
+            var res = new ResponseContext();
+            var stringContent = await this.GetCacheResponseContextAsync(url);
+
+            if (stringContent == null || string.IsNullOrEmpty(stringContent.StringContent))
             {
                 if (funcAsync == null)
                     throw new Exception("You must to specify the function that results a string");
 
-                var realContent = await funcAsync();
-                await this.SetCacheAsync(url, cachedContent, postData);
-                return realContent;
+                res.HasUsedCache = false;
+                try
+                {
+                    res = await funcAsync();
+                    await this.SetCacheAsync(url, res);
+                }
+                catch (Exception ex)
+                {
+                    res.StringContent = null;
+                    res.Exception = ex;
+                }
+
+                return res;
             }
 
-            return cachedContent;
+            stringContent.HasUsedCache = true;
+            return stringContent;
         }
 
-        public async Task<string> UseCachedAsync(string url, string postData = null, Func<Task<string>> funcAsync = null)
+        public async Task<ResponseContext> UseCachedAsync(string url, Func<Task<string>> funcAsync)
         {
-            var key = GetKey(url, postData);
+            var res = new ResponseContext();
+            res.RequestUrl = url;
 
-            var cachedContent = await this.GetCachedAsync(url, postData);
-            if (string.IsNullOrEmpty(cachedContent))
+            var stringContent = await this.GetCacheAsync(url);
+
+            if (string.IsNullOrEmpty(stringContent))
             {
                 if (funcAsync == null)
                     throw new Exception("You must to specify the function that results a string");
 
-                var realContent = await funcAsync();
-                await this.SetCacheAsync(url, cachedContent, postData);
-                return realContent;
+                res.HasUsedCache = false;
+                try
+                {
+                    res.StringContent = await funcAsync();
+                    await this.SetCacheAsync(url, res.StringContent);
+                }
+                catch (Exception ex)
+                {
+                    res.StringContent = null;
+                    res.Exception = ex;
+                }
+                return res;
             }
 
-            return cachedContent;
+            res.HasUsedCache = true;
+            res.StringContent = stringContent;
+            return res;
         }
 
-        public async Task<bool> SetCacheAsync(string url, string content, IEnumerable<KeyValuePair<string, string>> postData = null)
+        public async Task<ResponseContext> UseCachedAsync(string url, IEnumerable<KeyValuePair<string, string>> postData, Func<Task<string>> funcAsync)
         {
-            var key = GetKey(url, postData);
+            var res = new ResponseContext();
+            res.RequestUrl = url;
+
+            var stringContent = await this.GetCacheAsync(url, postData);
+
+            if (string.IsNullOrEmpty(stringContent))
+            {
+                if (funcAsync == null)
+                    throw new Exception("You must to specify the function that results a string");
+
+                res.HasUsedCache = false;
+                res.StringContent = await funcAsync();
+
+                try
+                {
+                    res.StringContent = await funcAsync();
+                    await this.SetCacheAsync(url, res.StringContent, postData);
+                }
+                catch (Exception ex)
+                {
+                    res.StringContent = null;
+                    res.Exception = ex;
+                }
+                return res;
+            }
+
+            res.HasUsedCache = true;
+            res.StringContent = stringContent;
+            return res;
+        }
+
+        public async Task<ResponseContext> UseCachedAsync(string url, string postData, Func<Task<string>> funcAsync)
+        {
+            var res = new ResponseContext();
+            res.RequestUrl = url;
+
+            var stringContent = await this.GetCacheAsync(url, postData);
+            if (string.IsNullOrEmpty(stringContent))
+            {
+                if (funcAsync == null)
+                    throw new Exception("You must to specify the function that results a string");
+
+                res.HasUsedCache = false;
+                try
+                {
+                    res.StringContent = await funcAsync();
+                    await this.SetCacheAsync(url, res.StringContent, postData);
+                }
+                catch (Exception ex)
+                {
+                    res.StringContent = null;
+                    res.Exception = ex;
+                }
+                return res;
+            }
+
+            res.HasUsedCache = true;
+            res.StringContent = stringContent;
+            return res;
+        }
+
+        public async Task<bool> SetCacheAsync(string url, string content, IEnumerable<KeyValuePair<string, string>> postData)
+        {
+            var key = GetKeyWithKeyValuePostData(url, postData);
             return await cache.SetAsync<string>(key, content, duration);
         }
 
-        public async Task<bool> SetCacheAsync(string url, string content, string postData = null)
+        public async Task<bool> SetCacheAsync(string url, string content, string postData)
         {
-            var key = GetKey(url, postData);
+            var key = GetKeyWithStringPostData(url, postData);
             return await cache.SetAsync<string>(key, content, duration);
+        }
+
+        public async Task<bool> SetCacheAsync(string url, string content)
+        {
+            var key = GetObjectKey(url);
+            return await cache.SetAsync<string>(key, content, duration);
+        }
+
+        public async Task<bool> SetCacheAsync(string url, ResponseContext content)
+        {
+            var key = GetObjectKey(url, nameof(ResponseContext));
+            return await cache.SetAsync<ResponseContext>(key, content, duration);
         }
 
         public async Task<bool> DeleteCacheAsync(string url, IEnumerable<KeyValuePair<string, string>> postData = null)
         {
-            var key = GetKey(url, postData);
+            var key = GetKeyWithKeyValuePostData(url, postData);
             return await cache.RemoveAsync(key);
         }
     }

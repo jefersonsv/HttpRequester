@@ -59,5 +59,10 @@ namespace HttpRequester.Driver
         {
             client.Headers[key] = value;
         }
+
+        public async Task<ResponseContext> GetAsync(string url)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

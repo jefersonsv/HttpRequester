@@ -1,11 +1,8 @@
-﻿using AngleSharp;
-using HttpRequester.Engine;
+﻿using HttpRequester.Engine;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +18,7 @@ namespace HttpRequester.Driver
         public BetterWebClientDriverRequester()
         {
             this.client = new BetterWebClient();
+            this.client.AutoRedirect = false;
         }
 
         public async Task<byte[]> DownloadDataTaskAsync(string url)
@@ -28,6 +26,11 @@ namespace HttpRequester.Driver
             var res = await client.DownloadDataTaskAsync(url);
             LastCookie = this.client.CookieContainer.GetCookieHeader(new Uri(url));
             return res;
+        }
+
+        public async Task<ResponseContext> GetAsync(string url)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<string> GetContentAsync(string url)

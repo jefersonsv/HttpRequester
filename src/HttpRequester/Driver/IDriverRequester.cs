@@ -7,6 +7,7 @@ namespace HttpRequester.Driver
 {
     public interface IDriverRequester
     {
+        Task<ResponseContext> GetAsync(string url);
         string LastCookie { get; }
         void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers);
         void SetHeader(string key, string value);
