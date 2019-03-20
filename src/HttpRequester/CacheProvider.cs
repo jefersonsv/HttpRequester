@@ -148,8 +148,9 @@ namespace HttpRequester
         public async Task<ResponseContext> UseCachedAsync(string url, Func<Task<ResponseContext>> funcAsync)
         {
             var res = new ResponseContext();
-            var stringContent = await this.GetCacheResponseContextAsync(url);
+            res.RequestUrl = url;
 
+            var stringContent = await this.GetCacheResponseContextAsync(url);
             if (stringContent == null || string.IsNullOrEmpty(stringContent.StringContent))
             {
                 if (funcAsync == null)
@@ -218,8 +219,6 @@ namespace HttpRequester
                     throw new Exception("You must to specify the function that results a string");
 
                 res.HasUsedCache = false;
-                res.StringContent = await funcAsync();
-
                 try
                 {
                     res.StringContent = await funcAsync();

@@ -22,7 +22,6 @@ namespace HttpCached
             var normal = new HttpRequester.RequesterCached(EnumHttpProvider.HttpClient);
 
             var google = await cached.GetContentAsync("https://www.google.com");
-
             Thread.Sleep(Timeout.Infinite);
         }
     }
