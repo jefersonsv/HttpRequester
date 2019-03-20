@@ -18,7 +18,10 @@ namespace HttpCached
 
         static async Task Main(string[] args)
         {
+            var cached = new HttpRequester.RequesterCached(EnumHttpProvider.HttpClient, new CacheProvider(new DataFoundation.Redis.RedisConnection()));
+            var normal = new HttpRequester.RequesterCached(EnumHttpProvider.HttpClient);
 
+            var google = await cached.GetContentAsync("https://www.google.com");
 
             Thread.Sleep(Timeout.Infinite);
         }
