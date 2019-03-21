@@ -64,5 +64,15 @@ namespace HttpRequester.Driver
         {
             throw new NotImplementedException();
         }
+
+        public Task<ResponseContext> PostAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseContext> PostAsync(string url, string postData)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

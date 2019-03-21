@@ -40,6 +40,16 @@ namespace HttpRequester.Driver
             return res;
         }
 
+        public Task<ResponseContext> PostAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseContext> PostAsync(string url, string postData)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
             var nameValueCollection = new NameValueCollection();

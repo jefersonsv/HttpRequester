@@ -50,28 +50,22 @@ namespace HttpRequester
             return await this.driver.DownloadDataTaskAsync(url);
         }
 
-        public async Task<ResponseContext> GetAsync(string url)
+        public async Task<ResponseContext> GetAsync(string url, EnumCacheStrategy strategy = EnumCacheStrategy.CacheIfNotExist)
         {
             Func<Task<ResponseContext>> call = async () => await driver.GetAsync(url);
-            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, call);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, call, strategy);
         }
 
-        public async Task<ResponseContext> GetContentAsync(string url)
+        public async Task<ResponseContext> PostAsync(string url, string postData, EnumCacheStrategy strategy = EnumCacheStrategy.CacheIfNotExist)
         {
-            Func<Task<string>> call = async () => await driver.GetContentAsync(url);
-            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, call);
+            Func<Task<ResponseContext>> call = async () => await driver.PostAsync(url, postData);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call, strategy);
         }
 
-        public async Task<ResponseContext> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData)
+        public async Task<ResponseContext> PostAsync(string url, IEnumerable<KeyValuePair<string, string>> postData, EnumCacheStrategy strategy = EnumCacheStrategy.CacheIfNotExist)
         {
-            Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
-            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, postData, call);
-        }
-
-        public async Task<ResponseContext> PostContentAsync(string url, string postData)
-        {
-            Func<Task<string>> call = async () => await driver.PostContentAsync(url, postData);
-            return cacheProvider == null ? new ResponseContext() { StringContent = await call() } : await cacheProvider.UseCachedAsync(url, postData, call);
+            Func<Task<ResponseContext>> call = async () => await driver.PostAsync(url, postData);
+            return cacheProvider == null ? await call() : await cacheProvider.UseCachedAsync(url, postData, call, strategy);
         }
 
         public void SetAcceptLanguage(string acceptLanguage)
@@ -96,6 +90,12 @@ namespace HttpRequester
 
         public void SetUserAgent(string userAgent)
         {
+            driver.SetUserAgent(userAgent);
+        }
+
+        public void SetRandomUserAgent()
+        {
+            var userAgent = new HttpRequester.UserAgentSwitcher().GetRandom();
             driver.SetUserAgent(userAgent);
         }
     }

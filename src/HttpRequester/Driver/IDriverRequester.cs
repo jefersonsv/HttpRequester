@@ -18,5 +18,7 @@ namespace HttpRequester.Driver
         Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData);
         Task<string> PostContentAsync(string url, string postData);
         Task<byte[]> DownloadDataTaskAsync(string url);
+        Task<ResponseContext> PostAsync(string url, IEnumerable<KeyValuePair<string, string>> postData);
+        Task<ResponseContext> PostAsync(string url, string postData);
     }
 }
