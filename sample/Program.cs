@@ -16,7 +16,7 @@ namespace HttpCached
             var cached = new HttpRequester.RequesterCached(EnumHttpProvider.HttpClient, new CacheProvider(new DataFoundation.Redis.RedisConnection()));
             var normal = new HttpRequester.RequesterCached(EnumHttpProvider.HttpClient);
 
-            var google = await cached.GetAsync("https://www.google.com");
+            //var google = await cached.GetAsync("https://www.google.com");
             Thread.Sleep(Timeout.Infinite);
         }
     }

@@ -14,6 +14,7 @@ namespace HttpRequester.Driver
         void SetUserAgent(string userAgent);
         void SetAcceptLanguage(string acceptLanguage);
         void SetCookie(string cookie);
+        void SetAccept(string accept);
         Task<string> GetContentAsync(string url);
         Task<string> PostContentAsync(string url, IEnumerable<KeyValuePair<string, string>> postData);
         Task<string> PostContentAsync(string url, string postData);

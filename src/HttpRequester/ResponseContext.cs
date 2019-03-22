@@ -8,10 +8,10 @@ namespace HttpRequester
     {
         public string RequestUrl { get; set; }
         public string ResponseUrl { get; set; }
-
         public Exception Exception { get; set; }
         public bool HasUsedCache { get; set; }
         public string StringContent { get; set; }
+        public IEnumerable<KeyValuePair<string, string>> Headers { get; set; }
 
         public bool HasErrors { get { return (this.Exception != null); } }
 

@@ -32,6 +32,7 @@ namespace HttpRequester.Driver
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
+                res.Headers = response.Headers.Select(s => new KeyValuePair<string, string>(s.Key, string.Join("; ", s.Value).Trim()));
                 res.ResponseUrl = response.RequestMessage?.RequestUri?.ToString() ?? url;
                 res.StringContent = await response.Content.ReadAsStringAsync();
             }
@@ -53,6 +54,7 @@ namespace HttpRequester.Driver
                 var response = await client.PostAsync(url, new StringContent(postData));
                 response.EnsureSuccessStatusCode();
 
+                res.Headers = response.Headers.Select(s => new KeyValuePair<string, string>(s.Key, string.Join("; ", s.Value).Trim()));
                 res.ResponseUrl = response.RequestMessage?.RequestUri?.ToString() ?? url;
                 res.StringContent = await response.Content.ReadAsStringAsync();
             }
@@ -75,6 +77,7 @@ namespace HttpRequester.Driver
                 var response = await this.client.PostAsync(url, body);
                 response.EnsureSuccessStatusCode();
 
+                res.Headers = response.Headers.Select(s => new KeyValuePair<string, string>(s.Key, string.Join("; ", s.Value).Trim()));
                 res.ResponseUrl = response.RequestMessage?.RequestUri?.ToString() ?? url;
                 res.StringContent = await response.Content.ReadAsStringAsync();
             }
@@ -109,13 +112,6 @@ namespace HttpRequester.Driver
         {
             if (key.Equals("Content-Type", StringComparison.InvariantCultureIgnoreCase))
                 return;
-
-            if (key.Equals("Connection", StringComparison.InvariantCultureIgnoreCase))
-            {
-                this.client.DefaultRequestHeaders.Remove("Connection");
-                this.client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                return;
-            }
 
             if (this.client.DefaultRequestHeaders.Contains(key))
                 this.client.DefaultRequestHeaders.Remove(key);

@@ -16,6 +16,11 @@ namespace HttpRequester.Driver
             SetHeader("Accept-Language", acceptLanguage);
         }
 
+        public void SetAccept(string accept)
+        {
+            SetHeader("Accept", accept);
+        }
+
         public void SetCookie(string cookie)
         {
             SetHeader("Cookie", cookie);

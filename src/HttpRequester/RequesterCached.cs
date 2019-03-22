@@ -73,6 +73,11 @@ namespace HttpRequester
             driver.SetAcceptLanguage(acceptLanguage);
         }
 
+        public void SetAccept(string acceptLanguage)
+        {
+            driver.SetAccept(acceptLanguage);
+        }
+
         public void SetCookie(string cookie)
         {
             driver.SetAcceptLanguage(cookie);
