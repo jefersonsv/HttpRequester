@@ -69,6 +69,11 @@ namespace HttpRequester.Driver
             return res;
         }
 
+        public override void RemoveHeader(string key)
+        {
+            client.Headers.Remove(key);
+        }
+
         public override void SetHeader(string key, string value)
         {
             client.Headers[key] = value;

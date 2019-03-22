@@ -12,6 +12,8 @@ namespace HttpRequester.Driver
         void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers);
         void SetHeader(string key, string value);
         void SetUserAgent(string userAgent);
+
+        void RemoveHeader(string key);
         void SetAcceptLanguage(string acceptLanguage);
         void SetCookie(string cookie);
         void SetAccept(string accept);

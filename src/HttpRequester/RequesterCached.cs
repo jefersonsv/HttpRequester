@@ -88,6 +88,11 @@ namespace HttpRequester
             driver.SetHeader(key, value);
         }
 
+        public void RemoveHeader(string key)
+        {
+            driver.RemoveHeader(key);
+        }
+
         public void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers)
         {
             driver.SetHeaders(headers);

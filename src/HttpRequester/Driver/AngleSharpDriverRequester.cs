@@ -94,5 +94,10 @@ namespace HttpRequester.Driver
         {
             throw new NotImplementedException();
         }
+
+        public override void RemoveHeader(string key)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

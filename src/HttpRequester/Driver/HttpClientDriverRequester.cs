@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -19,7 +20,13 @@ namespace HttpRequester.Driver
 
         public HttpClientDriverRequester()
         {
-            this.client = new HttpClient();
+            // auto decompress gzip
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+
+            this.client = new HttpClient(handler);
         }
 
         public async Task<ResponseContext> GetAsync(string url)
@@ -106,6 +113,11 @@ namespace HttpRequester.Driver
         {
             var post = await this.client.PostAsync(url, new StringContent(postData));
             return await post.Content.ReadAsStringAsync();
+        }
+
+        public override void RemoveHeader(string key)
+        {
+            this.client.DefaultRequestHeaders.Remove(key);
         }
 
         public override void SetHeader(string key, string value)
